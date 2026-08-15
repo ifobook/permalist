@@ -55,7 +55,16 @@ app.post("/edit",async (req, res) => {
   res.redirect("/");
 });
 
-app.post("/delete", (req, res) => {
+
+async function deleteItem(id) {
+  const result = await db.query("DELETE FROM items WHERE id = $1", [id]);
+  return result.rows;
+}
+
+app.post("/delete", async (req, res) => {
+  const deleteItemId = req.body.deleteItemId;
+  await deleteItem(deleteItemId);
+  res.redirect("/");
 });
 
 app.listen(port, () => {
