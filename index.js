@@ -19,7 +19,7 @@ const db = new pg.Client({
 db.connect();
 
 async function getExistingList() {
-  const result = await db.query("SELECT * FROM items");
+  const result = await db.query("SELECT * FROM items ORDER BY id ASC");
   return result.rows;
 }
 
@@ -44,11 +44,19 @@ app.post("/add", async (req, res) => {
   res.redirect("/");
 });
 
+async function updateItem(title, id) {
+  const result = await db.query("UPDATE items SET title = $1 WHERE id = $2", [title, id])
+  return result.rows;
+}
+app.post("/edit",async (req, res) => {
+  const updatedItemId = req.body.updatedItemId;
+  const updatedItemTitle = req.body.updatedItemTitle;
+  const item = await updateItem(updatedItemTitle, updatedItemId);
+  res.redirect("/");
+});
 
-
-app.post("/edit", (req, res) => {});
-
-app.post("/delete", (req, res) => {});
+app.post("/delete", (req, res) => {
+});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
